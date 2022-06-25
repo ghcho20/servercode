@@ -6,10 +6,32 @@ import {
   SearchIcon,
 } from "@heroicons/react/outline";
 import Cart from "./Cart";
+import useSWR from "swr"
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("")
+
+  // const fetcher = (...args) => fetch(args).then(res => res.json())
+  const fetcher = async (...args) => (await fetch(args)).json()
+  // {
+  //   let res = await fetch(args)
+  //   return res.json()
+  // }
+
+  const {data, error} = useSWR(`/api/${searchTerm}`, fetcher)
+  if (error) {
+    console.log('Failed to Load!')
+  } else if(!data) {
+    console.log('Loading...')
+  } else {
+    console.log(`data = ${data.name}`)
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+  }
 
   return (
     <>
@@ -80,11 +102,15 @@ const Header = () => {
               <SearchIcon className="h-5 w-5" />
             </span>
 
-            <input
-              className="w-full border rounded-md pl-10 pr-4 py-2 focus:border-green-500 focus:outline-none focus:shadow-outline"
-              type="text"
-              placeholder="Search"
-            />
+            <form onSubmit={handleSubmit}>
+              <input
+                className="w-full border rounded-md pl-10 pr-4 py-2 focus:border-green-500 focus:outline-none focus:shadow-outline"
+                type="text"
+                placeholder="Search"
+                onChange={(e) => setSearchTerm(e.target.value)}
+                value = {searchTerm}
+              />
+            </form>
           </div>
         </div>
       </header>
