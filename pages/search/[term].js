@@ -51,7 +51,6 @@ export async function getServerSideProps({query}) {
   }]
   
   const products = await collection.aggregate(pipeline).toArray()
-  // const products = await cursor.toArray()
   return {
     props: {
       isConnected,
