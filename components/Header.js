@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from 'next/router'
 import {
@@ -13,12 +13,29 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("")
+  const [autoComplete, setAutoComplete] = useState([])
+
+  useEffect(async () => {
+    if (searchTerm.length) {
+      const data = await (await fetch(`/api/${searchTerm}`)).json()
+      setAutoComplete(data)
+    } else {
+      setAutoComplete([])
+    }
+  }, [searchTerm])
 
   const handleSubmit = (e) => {
     e.preventDefault()
 
     router.push({
         pathname: `/search/${searchTerm}`
+    })
+    setSearchTerm("")
+  }
+
+  const handleSelect = (id) => {
+    router.push({
+      pathname: `/products/${id}`
     })
     setSearchTerm("")
   }
@@ -101,6 +118,23 @@ const Header = () => {
                 value = {searchTerm}
               />
             </form>
+            {autoComplete.length >0 && (
+              <ul className="absolute inset-x-0 top-full bg-green-200 border border-green-500 rounded-md z-20">
+                {
+                  autoComplete.map(item => {
+                    return (
+                      <li
+                        key={item._id}
+                        className="px-4 py-2 hover:bg-green-300 cursor-pointer"
+                        onClick={() => handleSelect(item._id)}
+                      >
+                        {item.name}
+                      </li>
+                    )
+                  })
+                }
+              </ul>
+            )}
           </div>
         </div>
       </header>
