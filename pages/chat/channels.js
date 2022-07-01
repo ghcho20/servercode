@@ -1,8 +1,25 @@
-export default function Channels() {
+import clientPromise from "../../lib/mongodb";
+import ChannelList from "../../components/ChannelList"
+
+export default function Channels({isConnected, channels}) {
   return (
-    <div className='flex h-full flex-col justify-center items-center'>
-      <h1 className='text-4xl mb-5 font-bold'>Contact</h1>
-      <span className='text-7xl'>📞</span>
-    </div>
+    <>
+      <ChannelList channels={channels} />
+    </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const client = await clientPromise;
+  const isConnected = await client.isConnected();
+  const db = client.db("chat");
+  const collection = db.collection("channels");
+  const channels = await collection.find({}).toArray();
+
+  return {
+    props: {
+      isConnected,
+      channels: JSON.parse(JSON.stringify(channels)),
+    },
+  };
 }
