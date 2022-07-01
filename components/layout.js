@@ -17,6 +17,10 @@ export default function Layout({ children }) {
       href: '/chat/channels',
       title: 'Channels',
     },
+    {
+      href: '/chat/federation',
+      title: 'Federated Users',
+    },
   ];
 
   return (
