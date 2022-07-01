@@ -13,7 +13,7 @@ const Users = ({users}) => {
                 <h5 className="text-xl font-font text-white">{users.length}</h5>
             </div>
             <div className="flow-root">
-                <ul role="list" class="divide-y divide-emerald-200 dark:divide-emerald-200">
+                <ul role="list" className="divide-y divide-emerald-200 dark:divide-emerald-200">
                     {users.map(user => (
                         <li key={user.user_id} className="py-3 sm:py-4">
                             <div className="flex items-center space-x-4">
