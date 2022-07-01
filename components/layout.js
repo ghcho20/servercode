@@ -10,7 +10,7 @@ export default function Layout({ children }) {
       title: 'Dashboard',
     },
     {
-      href: '/chat/users',
+      href: '/chat/userlist',
       title: 'Users',
     },
     {
