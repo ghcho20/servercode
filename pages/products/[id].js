@@ -1,8 +1,3 @@
-import Head from "next/head";
-
-import Header from "../../components/Header";
-import Container from "../../components/Container";
-import Footer from "../../components/Footer";
 import ProductDetail from "../../components/ProductDetail";
 import clientPromise from "../../lib/mongodb";
 import { ObjectID } from 'mongodb'
@@ -12,17 +7,7 @@ const ProductDetails = ({product}) => {
     <>
       {product && (
         <>
-          <Head>
-            <title>MongoDB E-Commerce Demo - {product.name}</title>
-            <link rel="icon" href="/favicon.ico" />
-          </Head>
-          <div className="bg-white w-full min-h-screen">
-            <Header />
-            <Container>
-              <ProductDetail product={product} />
-            </Container>
-            <Footer />
-          </div>
+          <ProductDetail product={product} />
         </>
       )}
     </>
