@@ -13,22 +13,24 @@ import clientPromise from "../../lib/mongodb"
 }
 */
 export default async function handler( req, res) {
-    const { q } = req.query
+    const { q, fuzzy } = req.query
     const client = await clientPromise;
     const isConnected = await client.isConnected();
     const collection = client.db("chat").collection("users");
-    const pipeline = [{
+    let pipeline = [{
         $search: {
-        index: "simpleSearch",
+            index: "simpleSearch",
             text: {
                 query: q,
                 path: {
                     wildcard: '*'
-                },
-                fuzzy: {}
+                }
             }
         }
     }]
+    if (fuzzy === "true") {
+        pipeline[0].$search.text.fuzzy = {}
+    }
 
     const users = await collection.aggregate(pipeline).toArray()
     res.status(200).send(JSON.stringify(users))

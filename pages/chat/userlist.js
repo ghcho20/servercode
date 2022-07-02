@@ -10,28 +10,43 @@ export default function UserList({isConnected, users}) {
   const [searchUid, setSearchUid] = useState("")
   const [kickSearch, setKickSearch] = useState(false)
   const [foundUsers, setFoundUsers] = useState([])
+  const [autoComplete, setAutoComplete] = useState([])
+  const [useFuzzy, setUseFuzzy] = useState(false)
 
   useEffect(async () => {
     if (searchUid.length === 0) {
       setFoundUsers([])
+      setAutoComplete([])
+    } else if (!kickSearch) {
+      const res = await
+        (await fetch(`/api/userautocomplete?q=${searchUid}`)).json()
+      setAutoComplete(res)
     }
   }, [searchUid])
 
   const handleSubmit = (e) => {
     e.preventDefault()
     setKickSearch(true)
+    setUseFuzzy(true)
   }
 
   useEffect(async () => {
     if (kickSearch) {
-      const res = await (await fetch(`/api/usersearch?q=${searchUid}`)).json()
+      const res = await (await fetch(`/api/usersearch?q=${searchUid}&fuzzy=${useFuzzy}`)).json()
       setFoundUsers(res)
       setKickSearch(false)
+      setAutoComplete([])
     }
   }, [kickSearch])
 
   if (foundUsers.length>0) {
     users = foundUsers
+  }
+
+  const handleSelect = (uid) => {
+    setSearchUid(uid)
+    setKickSearch(true)
+    setUseFuzzy(false)
   }
 
   return (
@@ -49,6 +64,23 @@ export default function UserList({isConnected, users}) {
             value = {searchUid}
           />
         </form>
+        {autoComplete.length >0 && (
+          <ul className="absolute inset-x-0 top-full bg-green-200 border border-green-500 rounded-md z-20">
+            {
+              autoComplete.map(item => {
+                return (
+                  <li
+                    key={item._id}
+                    className="px-4 py-2 hover:bg-green-300 cursor-pointer"
+                    onClick={e => handleSelect(item.user_id)}
+                  >
+                    {item.nickname? item.nickname : item.user_id}
+                  </li>
+                )
+              })
+            }
+          </ul>
+        )}
       </div>
       <Users users={users} />
     </>
